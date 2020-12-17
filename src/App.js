@@ -41,6 +41,11 @@ function App() {
         }
         setCSelected([...cSelected]);
     };
+// TODO: 
+//  Add Checkout (Stripe)
+//  Add Cart
+//  Update Inventory on Checkout
+//  Create order on Checkout
 
     // const updateInventoryItem = useQuery(EDIT_INVENTORY_ITEM, { variables: { id: 9, quantityInStock: 5 }});
     return (
@@ -49,7 +54,7 @@ function App() {
                 <Card>
                     <CardHeader>Bible Book Club Kits</CardHeader>
                     <CardBody>
-                        <div>
+                          <div>
                                 {fetchInventoryItems.data.getInventoryItems.map(
                                     (item) => {
                                         return (
