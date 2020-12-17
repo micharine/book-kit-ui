@@ -1,6 +1,6 @@
 import { gql } from 'apollo-boost';
 
-export const fetchInventoryItems = gql`
+export const GET_INVENTORY = gql`
   {
     getInventoryItems {
         id,
@@ -13,7 +13,7 @@ export const fetchInventoryItems = gql`
   }
 `;
 
-export const fetchOneInventoryItem = gql`
+export const GET_ONE_INVENTORY_ITEM = gql`
   query ($id: Int){
     getInventoryItemInfo(id: $id) {
         name,
@@ -25,21 +25,21 @@ export const fetchOneInventoryItem = gql`
   }
 `;
 
-export const updateInventoryItem = gql`
+export const EDIT_INVENTORY_ITEM = gql`
   mutation($id: Int, $quantityInStock: Int) {
     updateInventoryItemInfo (id: $id, quantityInStock: $quantityInStock)
   }
 `;
 
 // TODO: Create Order with Stripe details
-// export const createOrder = gql`
+// export const CREATE_ORDER = gql`
 //   mutation($name: String, $email: String) {
 //     createOrder (name: $name, email: $email)
 //   }
 // `;
 
-// Not needed, but wanted to see the delet mutation example.
-// export const deleteInventoryItem = gql`
+// Not needed, but wanted to see the delete mutation example.
+// export const DELETE_INVENTORY_ITEM = gql`
 //   mutation($id: Int) {
 //     deleteInventoryItem(id: $id)
 //   }

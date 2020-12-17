@@ -3,23 +3,23 @@ import logo from './logo.svg';
 import './App.css';
 import { useQuery } from '@apollo/react-hooks';
 import {
-    fetchInventoryItems,
-    fetchOneInventoryItem,
-    updateInventoryItem,
+    GET_INVENTORY,
+    GET_ONE_INVENTORY_ITEM,
+    EDIT_INVENTORY_ITEM,
 } from './queries';
 import { Card, CardBody, CardHeader, CardSubtitle, Spinner } from 'reactstrap';
 function App() {
 
-  const getAllInventoryItems = useQuery(fetchInventoryItems);
-  const getOneInventoryItem = useQuery(fetchOneInventoryItem, {variables: {id: 1}});
-  if (getAllInventoryItems.loading || getOneInventoryItem.loading) return <Spinner color="dark"/>
-   if (getAllInventoryItems.error || getOneInventoryItem.error) {
-    console.log(getAllInventoryItems.error);
+  const fetchInventoryItems = useQuery(GET_INVENTORY);
+  const getOneInventoryItem = useQuery(GET_ONE_INVENTORY_ITEM, {variables: {id: 1}});
+  if (fetchInventoryItems.loading || getOneInventoryItem.loading) return <Spinner color="dark"/>
+   if (fetchInventoryItems.error || getOneInventoryItem.error) {
+    console.log(fetchInventoryItems.error);
     console.log(getOneInventoryItem.error);
     return <React.Fragment> Error</React.Fragment>
    }
 
-// const editInventoryItem = useQuery(updateInventoryItem, { variables: { id: 9, quantityInStock: 5 }});
+// const updateInventoryItem = useQuery(EDIT_INVENTORY_ITEM, { variables: { id: 9, quantityInStock: 5 }});
   return (
         <div className="App">
             <header className="App-header">
@@ -40,7 +40,7 @@ function App() {
                 <Card>
                     <CardHeader>Bible Book Club Kits</CardHeader>
                     <CardBody>
-                        <pre>{JSON.stringify(getAllInventoryItems.data, null, 2)}</pre>
+                        <pre>{JSON.stringify(fetchInventoryItems.data, null, 2)}</pre>
                     </CardBody>
                 </Card>
                 <Card>
