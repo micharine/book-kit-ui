@@ -7,7 +7,7 @@ import {
     GET_ONE_INVENTORY_ITEM,
     EDIT_INVENTORY_ITEM,
 } from './queries';
-import { Card, CardBody, CardHeader, CardSubtitle, Spinner } from 'reactstrap';
+import { Button, Card, CardBody, CardHeader, CardSubtitle, Spinner } from 'reactstrap';
 function App() {
 
   const fetchInventoryItems = useQuery(GET_INVENTORY);
@@ -22,23 +22,10 @@ function App() {
 // const updateInventoryItem = useQuery(EDIT_INVENTORY_ITEM, { variables: { id: 9, quantityInStock: 5 }});
   return (
         <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                <p>
-                    Edit <code>src/App.js</code> and save to reload.
-                </p>
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Learn React
-                </a>
-            </header>
             <div className="container">
                 <Card>
                     <CardHeader>Bible Book Club Kits</CardHeader>
+                    <Button color="success">Checkout</Button>{' '}
                     <CardBody>
                         <pre>{JSON.stringify(fetchInventoryItems.data, null, 2)}</pre>
                     </CardBody>
