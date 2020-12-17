@@ -1,5 +1,6 @@
-# Getting Started with Create React App
+# Front-end code for Bible Book Club Kit Store
 
+Backend: [book-kit](https://github.com/micharine/book-kit)
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
