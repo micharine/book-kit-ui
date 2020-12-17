@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { useQuery } from '@apollo/react-hooks';
@@ -7,34 +7,72 @@ import {
     GET_ONE_INVENTORY_ITEM,
     EDIT_INVENTORY_ITEM,
 } from './queries';
-import { Button, Card, CardBody, CardHeader, CardSubtitle, Spinner } from 'reactstrap';
+import {
+    Button,
+    ButtonGroup,
+    Card,
+    CardBody,
+    CardHeader,
+    Spinner,
+} from 'reactstrap';
 function App() {
+    const fetchInventoryItems = useQuery(GET_INVENTORY);
+    const getOneInventoryItem = useQuery(GET_ONE_INVENTORY_ITEM, {
+        variables: { id: 1 },
+    });
 
-  const fetchInventoryItems = useQuery(GET_INVENTORY);
-  const getOneInventoryItem = useQuery(GET_ONE_INVENTORY_ITEM, {variables: {id: 1}});
-  if (fetchInventoryItems.loading || getOneInventoryItem.loading) return <Spinner color="dark"/>
-   if (fetchInventoryItems.error || getOneInventoryItem.error) {
-    console.log(fetchInventoryItems.error);
-    console.log(getOneInventoryItem.error);
-    return <React.Fragment> Error</React.Fragment>
-   }
+    // let inventoryItems = fetchInventoryItems.data.getInventoryItems;
+    const [cSelected, setCSelected] = useState([]);
 
-// const updateInventoryItem = useQuery(EDIT_INVENTORY_ITEM, { variables: { id: 9, quantityInStock: 5 }});
-  return (
+    if (fetchInventoryItems.loading || getOneInventoryItem.loading)
+        return <Spinner color="dark" />;
+    if (fetchInventoryItems.error || getOneInventoryItem.error) {
+        console.log(fetchInventoryItems.error);
+        console.log(getOneInventoryItem.error);
+        return <React.Fragment> Error</React.Fragment>;
+    }
+
+    const onCheckboxBtnClick = (selected) => {
+        const index = cSelected.indexOf(selected);
+        if (index < 0) {
+            cSelected.push(selected);
+        } else {
+            cSelected.splice(index, 1);
+        }
+        setCSelected([...cSelected]);
+    };
+
+    // const updateInventoryItem = useQuery(EDIT_INVENTORY_ITEM, { variables: { id: 9, quantityInStock: 5 }});
+    return (
         <div className="App">
             <div className="container">
                 <Card>
                     <CardHeader>Bible Book Club Kits</CardHeader>
-                    <Button color="success">Checkout</Button>{' '}
                     <CardBody>
-                        <pre>{JSON.stringify(fetchInventoryItems.data, null, 2)}</pre>
-                    </CardBody>
-                </Card>
-                <Card>
-                    <CardHeader>Query - Displaying data with args</CardHeader>
-                    <CardBody>
-                        <CardSubtitle>Viewing a user by id</CardSubtitle>
-                        <pre>{JSON.stringify(getOneInventoryItem.data, null, 2)}</pre>
+                        <div>
+                                {fetchInventoryItems.data.getInventoryItems.map(
+                                    (item) => {
+                                        return (
+                                            <div key={item.id}>
+                                                <p >{item.name}</p>
+                                                <Button
+                                                    color="primary"
+                                                    onClick={() =>
+                                                        onCheckboxBtnClick(item.id)
+                                                    }
+                                                    active={cSelected.includes(
+                                                        item.id
+                                                    )}
+                                                >
+                                                    Add to Cart
+                                                </Button>
+                                            </div>
+                                        );
+                                    }
+                                )}
+                            <p>Selected: {JSON.stringify(cSelected)}</p>
+                            <Button color="success">Checkout</Button>{' '}
+                        </div>
                     </CardBody>
                 </Card>
             </div>
