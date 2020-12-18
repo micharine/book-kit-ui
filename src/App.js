@@ -30,7 +30,7 @@ const stripePromise = loadStripe(
 
 function App() {
     let [itemsInCart, setItemsInCart] = useState({})
-    let [totalCost, setTotalCost] = useState(0);
+    let [totalCost, setTotalCost] = useState(0)
     const fetchInventoryItems = useQuery(GET_INVENTORY)
     const getOneInventoryItem = useQuery(GET_ONE_INVENTORY_ITEM, {
         variables: { id: 1 },
@@ -46,20 +46,23 @@ function App() {
         return <React.Fragment> Error</React.Fragment>
     }
 
-    const onAddToCartClick = ({id, name, cost, code}) => {
-        let editedCart = {...itemsInCart};
+    const onAddToCartClick = ({ id, name, cost, code }) => {
+        let editedCart = { ...itemsInCart }
 
         if (!itemsInCart[id]) {
             editedCart[id] = {
-                    name: name,
-                    cost: cost? cost : 0,
-                    code: code,
+                name: name,
+                cost: cost ? cost : 0,
+                code: code,
             }
+            setTotalCost(totalCost+=cost)
         } else {
-            delete editedCart[id];
+            delete editedCart[id]
+            setTotalCost(totalCost-=cost)
         }
-
+        // TODO: itemsInCart get's a new value on delay.. perhaps add in USE EFFECT
         setItemsInCart(editedCart)
+        
     }
     // TODO:
     //  Add Checkout (Stripe)
@@ -86,7 +89,11 @@ function App() {
                                                         top
                                                         width="100%"
                                                         src="/assets/318x180.svg"
-                                                        alt={'Image for '+item.name+ ' book club kit'}
+                                                        alt={
+                                                            'Image for ' +
+                                                            item.name +
+                                                            ' book club kit'
+                                                        }
                                                     />
                                                     <CardBody>
                                                         <CardTitle tag="h5">
@@ -104,23 +111,30 @@ function App() {
                                                         <CardText>
                                                             {item.description}
                                                         </CardText>
-                                                        {!!item.quantityInStock? <Button
-                                                            color="primary"
-                                                            onClick={() =>
-                                                                onAddToCartClick(
-                                                                    item
-                                                                )
-                                                            }
-                                                            active={!!itemsInCart[item.id]}
-                                                        >
-                                                            Add to Cart
-                                                        </Button> : 
-                                                        <Button
-                                                        color="secondary"
-                                                        disabled = {true}
-                                                    >
-                                                        Out of Stock
-                                                    </Button>}
+                                                        {!!item.quantityInStock ? (
+                                                            <Button
+                                                                color="primary"
+                                                                onClick={() =>
+                                                                    onAddToCartClick(
+                                                                        item
+                                                                    )
+                                                                }
+                                                                active={
+                                                                    !!itemsInCart[
+                                                                        item.id
+                                                                    ]
+                                                                }
+                                                            >
+                                                                Add to Cart
+                                                            </Button>
+                                                        ) : (
+                                                            <Button
+                                                                color="secondary"
+                                                                disabled={true}
+                                                            >
+                                                                Out of Stock
+                                                            </Button>
+                                                        )}
                                                     </CardBody>
                                                 </Card>
                                             </div>
@@ -134,6 +148,15 @@ function App() {
                         <CardHeader>Your Cart</CardHeader>
                         <CardBody>
                             <p>Selected: {JSON.stringify(itemsInCart)}</p>
+                            {Object.keys(itemsInCart).map((id) => {
+                                let item = itemsInCart[id];
+                                return (
+                                <div key={item.code}>
+                                <p>{item.name+'  '+(item.cost? '$'+item.cost: 'FREE')}</p>
+                                </div>
+                                )
+                            })}
+                            <p>Total: {!!totalCost? '$'+totalCost : 'FREE'}</p>
                             <CardElement
                                 options={{
                                     style: {
