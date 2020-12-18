@@ -104,7 +104,7 @@ function App() {
                                                         <CardText>
                                                             {item.description}
                                                         </CardText>
-                                                        <Button
+                                                        {!!item.quantityInStock? <Button
                                                             color="primary"
                                                             onClick={() =>
                                                                 onAddToCartClick(
@@ -114,7 +114,13 @@ function App() {
                                                             active={!!itemsInCart[item.id]}
                                                         >
                                                             Add to Cart
-                                                        </Button>
+                                                        </Button> : 
+                                                        <Button
+                                                        color="secondary"
+                                                        disabled = {true}
+                                                    >
+                                                        Out of Stock
+                                                    </Button>}
                                                     </CardBody>
                                                 </Card>
                                             </div>
