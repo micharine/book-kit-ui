@@ -20,7 +20,7 @@ async function postData(url = '', data = {}) {
     return response.json(); // parses JSON response into native JavaScript objects
   }
   
-  let createPaymentIntent = ({items,currency})=>{
+  export let createPaymentIntent = ({items,currency})=>{
     let url = apiEndpoint+'/create-payment-intent';
     postData(url, { items, currency })
     .then(data => {
@@ -30,14 +30,14 @@ async function postData(url = '', data = {}) {
     });
   }
 
-  let confirmPayment = (clientSecret)=>{
+  export let confirmPayment = (clientSecret)=>{
     // call stripe.confirmCardPayment with the client secret
   }
   
 
-var response = fetch('/secret').then(function(response) {
-    return response.json();
-  }).then(function(responseJson) {
-    var clientSecret = responseJson.client_secret;
-    // Call stripe.confirmCardPayment() with the client secret.
-  });
+// var response = fetch('/secret').then(function(response) {
+//     return response.json();
+//   }).then(function(responseJson) {
+//     var clientSecret = responseJson.client_secret;
+//     // Call stripe.confirmCardPayment() with the client secret.
+//   });
