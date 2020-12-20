@@ -133,11 +133,11 @@ function App() {
                           <CardText>{item.description}</CardText>
                           {!!item.quantityInStock ? (
                             <Button
-                              color="primary"
+                              color={!itemsInCart[item.id] ? "primary" : "danger"}
                               onClick={() => onAddToCartClick(item)}
                               active={!!itemsInCart[item.id]}
                             >
-                              Add to Cart
+                              {!itemsInCart[item.id]? <>Add to Cart</> : <>Remove from Cart</>}
                             </Button>
                           ) : (
                             <Button color="secondary" disabled={true}>
