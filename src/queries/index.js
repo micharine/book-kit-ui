@@ -33,10 +33,31 @@ export const EDIT_INVENTORY_ITEM = gql`
 
 // TODO: Create Order with Stripe details
 export const CREATE_ORDER = gql`
-  mutation($name: String, $email: String) {
-    createOrder (name: $name, email: $email)
-  }
+mutation CreateOrder($inventoryItemCode: String,
+  $quantityOrdered: Int,
+  $customerID: String,
+  $transactionID:String,){
+  createOrder(
+    inventoryItemCode: $inventoryItemCode,
+    quantityOrdered: $quantityOrdered,
+    customerID: $customerID,
+    transactionID: $transactionID,
+  )
+}
 `;
+
+// example
+// import { gql, useMutation } from '@apollo/client';
+
+// const ADD_TODO = gql`
+// mutation AddTodo($type: String!) {
+//   addTodo(type: $type) {
+//     id
+//     type
+//   }
+// }
+// `;
+
 
 // Not needed, but wanted to see the delete mutation example.
 // export const DELETE_INVENTORY_ITEM = gql`

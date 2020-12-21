@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import './App.css'
-import { useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import {
   GET_INVENTORY,
   GET_ONE_INVENTORY_ITEM,
@@ -30,6 +30,7 @@ import {
 function App() {
   let [itemsInCart, setItemsInCart] = useState({})
   let [totalCost, setTotalCost] = useState(0)
+  let [orderNumber, setOrderNumber] = useState('')
   let [checkoutStarted, setCheckoutStarted] = useState(false)
   let [readyToConfirmPayment, setReadyToConfirmPayment] = useState(false)
   let [orderSuccessful, setOrderSuccessful] = useState(false)
@@ -37,6 +38,7 @@ function App() {
   // TODO: I should probably put this elsewhere...
   let [clientSecret, setClientSecret] = useState('')
   const fetchInventoryItems = useQuery(GET_INVENTORY)
+  const [createOrder, { data }] = useMutation(CREATE_ORDER)
   const getOneInventoryItem = useQuery(GET_ONE_INVENTORY_ITEM, {
     variables: { id: 1 },
   })
@@ -115,6 +117,21 @@ function App() {
         // execution. Set up a webhook or plugin to listen for the
         // payment_intent.succeeded event that handles any business critical
         // post-payment actions.
+        console.log(result.paymentIntent)
+        Object.keys(itemsInCart).map((id) => {
+          createOrder({
+            variables: {
+              inventoryItemCode: itemsInCart[id].code,
+              quantityOrdered: itemsInCart[id].quantityOrdered,
+              // Capture This!
+              customerID: 'Jenny Rosen',
+              transactionID: result.paymentIntent.id,
+            },
+          })
+        })
+
+        setOrderNumber(result.paymentIntent.id)
+
         setPaymentErrorMessage('')
 
         setOrderSuccessful(true)
@@ -141,6 +158,7 @@ function App() {
     setTotalCost(0)
     setClientSecret('')
     setPaymentErrorMessage('')
+    setOrderNumber('')
   }
 
   // const updateInventoryItem = useQuery(EDIT_INVENTORY_ITEM, { variables: { id: 9, quantityInStock: 5 }});
@@ -294,7 +312,10 @@ function App() {
               {orderSuccessful ? (
                 <div>
                   {' '}
-                  <Alert color="success">Your order has been received!</Alert>
+                  <Alert color="success">
+                    Your order has been received! Your order number is{' '}
+                    {orderNumber}
+                  </Alert>
                   <Button color="success" onClick={resetEverything}>
                     Continue Shopping
                   </Button>
