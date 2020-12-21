@@ -35,12 +35,16 @@ export const EDIT_INVENTORY_ITEM = gql`
 export const CREATE_ORDER = gql`
 mutation CreateOrder($inventoryItemCode: String,
   $quantityOrdered: Int,
-  $customerID: String,
+  $email: String,
+  $firstName: String,
+  $lastName: String,
   $transactionID:String,){
   createOrder(
     inventoryItemCode: $inventoryItemCode,
     quantityOrdered: $quantityOrdered,
-    customerID: $customerID,
+    email: $email,
+    firstName: $firstName,
+    lastName: $lastName,
     transactionID: $transactionID,
   )
 }

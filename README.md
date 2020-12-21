@@ -3,6 +3,16 @@
 React front-end for an Express-powered GraphQL simple store app. It allows you to add items to your cart and checkout ([Stripe card element](https://stripe.com/docs/stripe-js/react#element-components)). Upon checkout, an order will be created in a MySQL database.
 Backend: [book-kit](https://github.com/micharine/book-kit) 
 
+## TO DO
+- [ ] Break `App.js` into components
+- [ ] Update Inventory Items to decrease the quantity in stock when you create an order
+- [ ] Styling
+- [ ] Consider using Stripe's [prebuilt checkout page](https://stripe.com/docs/payments/accept-a-payment) instead of custom card
+- [ ] ...
+
+## Notes
+- Info for testing stripe element: https://stripe.com/docs/testing
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

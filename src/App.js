@@ -14,7 +14,7 @@ import {
   Card,
   CardBody,
   CardHeader,
-  CardImg,
+  // CardImg,
   CardText,
   CardTitle,
   CardSubtitle,
@@ -46,7 +46,6 @@ function App() {
   const stripe = useStripe()
   const elements = useElements()
 
-  // let inventoryItems = fetchInventoryItems.data.getInventoryItems;
 
   if (fetchInventoryItems.loading || getOneInventoryItem.loading)
     return <Spinner color="dark" />
@@ -64,7 +63,7 @@ function App() {
         name: name,
         cost: cost ? cost : 0,
         code: code,
-        // default to 1 for now
+        // default to 1 for now. TODO: Allow Customer to increase/decrease quantity
         quantityOrdered: 1,
       }
       setTotalCost((totalCost += cost))
@@ -75,12 +74,6 @@ function App() {
     // TODO: itemsInCart get's a new value on delay.. perhaps add in USE EFFECT
     setItemsInCart(editedCart)
   }
-  // TODO:
-  //  Add Checkout (Stripe)
-  //  Add Cart
-  //  Update Inventory on Checkout
-  //  Create order on Checkout
-  //  IMAGES?
 
   // STRIPE CARD STUFF
 
@@ -88,6 +81,8 @@ function App() {
     // We don't want to let default form submission happen here,
     // which would refresh the page.
     event.preventDefault()
+    let firstName = document.getElementById('firstName').value
+    let lastName = document.getElementById('lastName').value
 
     if (!stripe || !elements) {
       // Stripe.js has not yet loaded.
@@ -100,7 +95,7 @@ function App() {
         card: elements.getElement(CardElement),
         //Test
         billing_details: {
-          name: 'Jenny Rosen',
+          name: lastName+', '+firstName,
         },
       },
     })
@@ -112,27 +107,33 @@ function App() {
     } else {
       // The payment has been processed!
       if (result.paymentIntent.status === 'succeeded') {
-        // Show a success message to your customer
-        // There's a risk of the customer closing the window before callback
+        // TODO: There's a risk of the customer closing the window before callback
         // execution. Set up a webhook or plugin to listen for the
         // payment_intent.succeeded event that handles any business critical
         // post-payment actions.
-        console.log(result.paymentIntent)
-        Object.keys(itemsInCart).map((id) => {
+
+        // console.log(result.paymentIntent)
+        Object.keys(itemsInCart).forEach((id) => {
           createOrder({
             variables: {
               inventoryItemCode: itemsInCart[id].code,
               quantityOrdered: itemsInCart[id].quantityOrdered,
-              // Capture This!
-              customerID: 'Jenny Rosen',
+              email: document.getElementById('email').value,
+              firstName: document.getElementById('firstName').value,
+              lastName: document.getElementById('lastName').value,
               transactionID: result.paymentIntent.id,
             },
           })
+          // TODO: Update Inventory Items
+      
+          // let inventoryItems = fetchInventoryItems.data.getInventoryItems;
+          // const updateInventoryItem = useQuery(EDIT_INVENTORY_ITEM, { variables: { id: 9, quantityInStock: 5 }});
         })
 
         setOrderNumber(result.paymentIntent.id)
 
         setPaymentErrorMessage('')
+        // Show a success message to your customer
 
         setOrderSuccessful(true)
 
@@ -161,7 +162,6 @@ function App() {
     setOrderNumber('')
   }
 
-  // const updateInventoryItem = useQuery(EDIT_INVENTORY_ITEM, { variables: { id: 9, quantityInStock: 5 }});
   return (
     <div className="App">
       <div className="container">
@@ -174,12 +174,12 @@ function App() {
                   return (
                     <div key={item.id}>
                       <Card>
-                        <CardImg
+                        {/* <CardImg
                           top
                           width="100%"
                           src="/assets/318x180.svg"
                           alt={'Image for ' + item.name + ' book club kit'}
-                        />
+                        /> */}
                         <CardBody>
                           <CardTitle tag="h5">{item.name}</CardTitle>
                           <CardSubtitle tag="h6" className="mb-2 text-muted">
@@ -295,6 +295,7 @@ function App() {
                       },
                     }}
                   />
+
                   {paymentErrorMessage ? (
                     <>
                       <Alert color="danger">{paymentErrorMessage}</Alert>
@@ -302,6 +303,15 @@ function App() {
                   ) : (
                     ''
                   )}
+                  <label htmlFor="firstName">First Name</label>
+                  <br></br>
+                  <input type="text" id="firstName" name="firstName" required></input>
+                  <label htmlFor="lastName">Last Name</label>
+                  <br></br>
+                  <input type="text" id="lastName" name="lastName" required></input>
+                  <label htmlFor="email">Email Address</label>
+                  <br></br>
+                  <input type="text" id="email" name="email" required></input>
                   <Button color="success" disabled={!stripe}>
                     Confirm order
                   </Button>
