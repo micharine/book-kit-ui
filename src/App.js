@@ -28,6 +28,7 @@ import {
 function App() {
   let [itemsInCart, setItemsInCart] = useState({})
   let [totalCost, setTotalCost] = useState(0)
+  let [checkoutStarted, setCheckoutStarted] = useState(false)
   const fetchInventoryItems = useQuery(GET_INVENTORY)
   const getOneInventoryItem = useQuery(GET_ONE_INVENTORY_ITEM, {
     variables: { id: 1 },
@@ -103,8 +104,14 @@ function App() {
         // execution. Set up a webhook or plugin to listen for the
         // payment_intent.succeeded event that handles any business critical
         // post-payment actions.
+    setCheckoutStarted(false);
+
       }
     }
+  }
+  const startCheckout = async (itemsInCart) => {
+    setCheckoutStarted(true);
+    // create payment intent with itemsInCart and currency
   }
 
   // const updateInventoryItem = useQuery(EDIT_INVENTORY_ITEM, { variables: { id: 9, quantityInStock: 5 }});
@@ -113,7 +120,7 @@ function App() {
         <div className="container">
           <Card>
             <CardHeader>Bible Book Club Kits</CardHeader>
-            <CardBody>
+            {!checkoutStarted? <CardBody>
               <div>
                 {fetchInventoryItems.data.getInventoryItems.map((item) => {
                   return (
@@ -150,9 +157,9 @@ function App() {
                   )
                 })}
               </div>
-            </CardBody>
+            </CardBody>: ''}
           </Card>
-          <Card>
+          {!checkoutStarted? <Card>
             <CardHeader>Your Cart</CardHeader>
             <CardBody>
               <p>Selected: {JSON.stringify(itemsInCart)}</p>
@@ -168,8 +175,27 @@ function App() {
                   </div>
                 )
               })}
+              { Object.keys(itemsInCart).length ? <><p>Total: {!!totalCost ? '$' + totalCost : 'FREE'}</p>
+              {!checkoutStarted ? <Button color="success" onClick={() => startCheckout(itemsInCart)}>Checkout</Button>: ''} </>: ''}
+            </CardBody>
+          </Card>: ''}
+          {checkoutStarted? <Card>
+            <CardHeader>Checkout</CardHeader>
+            <CardBody>
+              <p>Selected: {JSON.stringify(itemsInCart)}</p>
+              {Object.keys(itemsInCart).map((id) => {
+                let item = itemsInCart[id]
+                return (
+                  <div key={item.code}>
+                    <p>
+                      {item.name +
+                        '  ' +
+                        (item.cost ? '$' + item.cost : 'FREE')}
+                    </p>
+                  </div>
+                )
+              })}
               { Object.keys(itemsInCart).length ? <p>Total: {!!totalCost ? '$' + totalCost : 'FREE'}</p> : ''}
-              <Button color="success">Checkout</Button>{' '}
               <form onSubmit={handleSubmit}>
                 <CardElement
                   options={{
@@ -192,7 +218,7 @@ function App() {
                 </Button>
               </form>
             </CardBody>
-          </Card>
+          </Card>: ''}
         </div>
       </div>
   )
