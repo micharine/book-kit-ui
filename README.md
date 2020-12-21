@@ -7,6 +7,7 @@ Backend: [book-kit](https://github.com/micharine/book-kit)
 - [ ] Break `App.js` into components
 - [ ] Update Inventory Items to decrease the quantity in stock when you create an order
 - [ ] Styling
+- [ ] Bug: handle checkout with items that are free ( or less than 50 cents)
 - [ ] Consider using Stripe's [prebuilt checkout page](https://stripe.com/docs/payments/accept-a-payment) instead of custom card
 - [ ] ...
 
