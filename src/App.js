@@ -33,6 +33,7 @@ function App() {
   let [checkoutStarted, setCheckoutStarted] = useState(false)
   let [readyToConfirmPayment, setReadyToConfirmPayment] = useState(false)
   let [orderSuccessful, setOrderSuccessful] = useState(false)
+  let [paymentErrorMessage, setPaymentErrorMessage] = useState('')
   // TODO: I should probably put this elsewhere...
   let [clientSecret, setClientSecret] = useState('')
   const fetchInventoryItems = useQuery(GET_INVENTORY)
@@ -105,6 +106,7 @@ function App() {
     if (result.error) {
       // Show error to your customer (e.g., insufficient funds)
       console.log(result.error.message)
+      setPaymentErrorMessage(result.error.message)
     } else {
       // The payment has been processed!
       if (result.paymentIntent.status === 'succeeded') {
@@ -113,10 +115,11 @@ function App() {
         // execution. Set up a webhook or plugin to listen for the
         // payment_intent.succeeded event that handles any business critical
         // post-payment actions.
+        setPaymentErrorMessage('')
+
         setOrderSuccessful(true)
 
         // create order!!!
-
       }
     }
   }
@@ -130,13 +133,14 @@ function App() {
     }
   }
 
-  const resetEverything = ()=>{
+  const resetEverything = () => {
     setCheckoutStarted(false)
     setReadyToConfirmPayment(false)
     setOrderSuccessful(false)
     setItemsInCart({})
     setTotalCost(0)
     setClientSecret('')
+    setPaymentErrorMessage('')
   }
 
   // const updateInventoryItem = useQuery(EDIT_INVENTORY_ITEM, { variables: { id: 9, quantityInStock: 5 }});
@@ -273,6 +277,13 @@ function App() {
                       },
                     }}
                   />
+                  {paymentErrorMessage ? (
+                    <>
+                      <Alert color="danger">{paymentErrorMessage}</Alert>
+                    </>
+                  ) : (
+                    ''
+                  )}
                   <Button color="success" disabled={!stripe}>
                     Confirm order
                   </Button>
@@ -284,7 +295,9 @@ function App() {
                 <div>
                   {' '}
                   <Alert color="success">Your order has been received!</Alert>
-                  <Button color="success" onClick={resetEverything}>Continue Shopping</Button>
+                  <Button color="success" onClick={resetEverything}>
+                    Continue Shopping
+                  </Button>
                 </div>
               ) : (
                 ''
