@@ -359,7 +359,7 @@ function App() {
                       ''
                     )}
 
-                    <Button color="success" disabled={!stripe}>
+                    <Button color="success" disabled={!stripe} style={{marginBottom:'20px'}}>
                       Confirm order
                     </Button>
                     <br></br>
