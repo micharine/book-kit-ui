@@ -30,6 +30,8 @@ import {
   useElements,
 } from '@stripe/react-stripe-js'
 
+import leaf from './images/leaf.jpg'
+
 function App() {
   let [itemsInCart, setItemsInCart] = useState({})
   let [totalCost, setTotalCost] = useState(0)
@@ -165,6 +167,7 @@ function App() {
   }
 
   return (
+    // <div className="App" style={{ backgroundImage: `url(${leaf})` }}>
     <div className="App">
       <div className="container">
         <Card>
