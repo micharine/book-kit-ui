@@ -18,6 +18,9 @@ import {
   CardText,
   CardTitle,
   CardSubtitle,
+  Col,
+  Container,
+  Row,
   Spinner,
 } from 'reactstrap'
 import {
@@ -45,7 +48,6 @@ function App() {
   // STRIPE CARD STUFF
   const stripe = useStripe()
   const elements = useElements()
-
 
   if (fetchInventoryItems.loading || getOneInventoryItem.loading)
     return <Spinner color="dark" />
@@ -95,7 +97,7 @@ function App() {
         card: elements.getElement(CardElement),
         //Test
         billing_details: {
-          name: lastName+', '+firstName,
+          name: lastName + ', ' + firstName,
         },
       },
     })
@@ -125,7 +127,7 @@ function App() {
             },
           })
           // TODO: Update Inventory Items
-      
+
           // let inventoryItems = fetchInventoryItems.data.getInventoryItems;
           // const updateInventoryItem = useQuery(EDIT_INVENTORY_ITEM, { variables: { id: 9, quantityInStock: 5 }});
         })
@@ -220,7 +222,7 @@ function App() {
           <Card>
             <CardHeader>Your Cart</CardHeader>
             <CardBody>
-              <p>Selected: {JSON.stringify(itemsInCart)}</p>
+              {/* <p>Selected: {JSON.stringify(itemsInCart)}</p> */}
               {Object.keys(itemsInCart).map((id) => {
                 let item = itemsInCart[id]
                 return (
@@ -257,9 +259,9 @@ function App() {
         )}
         {checkoutStarted ? (
           <Card>
-            <CardHeader>Checkout</CardHeader>
+            <CardHeader>Checkout Details</CardHeader>
             <CardBody>
-              <p>Selected: {JSON.stringify(itemsInCart)}</p>
+              {/* <p>Selected: {JSON.stringify(itemsInCart)}</p> */}
               {Object.keys(itemsInCart).map((id) => {
                 let item = itemsInCart[id]
                 return (
@@ -273,49 +275,96 @@ function App() {
                 )
               })}
               {Object.keys(itemsInCart).length ? (
-                <p>Total: {!!totalCost ? '$' + totalCost : 'FREE'}</p>
+                <p>
+                  <strong>Total</strong>:{' '}
+                  {!!totalCost ? '$' + totalCost : 'FREE'}
+                </p>
               ) : (
                 ''
               )}
               {readyToConfirmPayment & !orderSuccessful ? (
-                <form onSubmit={handleSubmit}>
-                  <CardElement
-                    options={{
-                      style: {
-                        base: {
-                          fontSize: '16px',
-                          color: '#424770',
-                          '::placeholder': {
-                            color: '#aab7c4',
-                          },
-                        },
-                        invalid: {
-                          color: '#9e2146',
-                        },
-                      },
-                    }}
-                  />
+                <Card>
+                  <form onSubmit={handleSubmit}>
+                    <CardHeader>Payment Information</CardHeader>
+                    <CardBody>
+                      <Container>
+                      <Row>
+                        <Col fluid={true}>
+                          <br></br>
+                          <input
+                            type="text"
+                            id="firstName"
+                            name="firstName"
+                            placeholder='First Name'
+                            required
+                          ></input>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col fluid={true}>
+                        <br></br>
+                          <input
+                            type="text"
+                            id="lastName"
+                            name="lastName"
+                            placeholder='Last Name'
+                            required
+                          ></input>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col fluid={true}>
+                        <br></br>
+                          <input
+                            type="text"
+                            id="email"
+                            name="email"
+                            placeholder='Email Address'
+                            required
+                          ></input>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col fluid={true}>
+                        <br></br>
+                          <CardElement
+                            options={{
+                              style: {
+                                base: {
+                                  color: '#32325d',
+                                  fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                                  fontSmoothing: 'antialiased',
+                                  fontSize: '16px',
+                                  '::placeholder': {
+                                    color: '#6c757d'
+                                  }
+                                },
+                                invalid: {
+                                  color: '#fa755a',
+                                  iconColor: '#fa755a'
+                                }
+                              },
+                            }}
+                          />
+                        </Col>
+                      </Row>
+                      </Container>
+                    </CardBody>
 
-                  {paymentErrorMessage ? (
-                    <>
-                      <Alert color="danger">{paymentErrorMessage}</Alert>
-                    </>
-                  ) : (
-                    ''
-                  )}
-                  <label htmlFor="firstName">First Name</label>
-                  <br></br>
-                  <input type="text" id="firstName" name="firstName" required></input>
-                  <label htmlFor="lastName">Last Name</label>
-                  <br></br>
-                  <input type="text" id="lastName" name="lastName" required></input>
-                  <label htmlFor="email">Email Address</label>
-                  <br></br>
-                  <input type="text" id="email" name="email" required></input>
-                  <Button color="success" disabled={!stripe}>
-                    Confirm order
-                  </Button>
-                </form>
+                    {paymentErrorMessage ? (
+                      <>
+                        <Alert color="danger">{paymentErrorMessage}</Alert>
+                      </>
+                    ) : (
+                      ''
+                    )}
+
+                    <Button color="success" disabled={!stripe}>
+                      Confirm order
+                    </Button>
+                    <br></br>
+                  </form>
+                </Card>
               ) : (
                 ''
               )}
