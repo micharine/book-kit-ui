@@ -5,8 +5,11 @@ import {
   GET_INVENTORY,
   GET_ONE_INVENTORY_ITEM,
   EDIT_INVENTORY_ITEM,
+  CREATE_ORDER,
 } from './queries'
+import { createPaymentIntent } from './services'
 import {
+  Alert,
   Button,
   Card,
   CardBody,
@@ -24,11 +27,14 @@ import {
   useElements,
 } from '@stripe/react-stripe-js'
 
-
 function App() {
   let [itemsInCart, setItemsInCart] = useState({})
   let [totalCost, setTotalCost] = useState(0)
   let [checkoutStarted, setCheckoutStarted] = useState(false)
+  let [readyToConfirmPayment, setReadyToConfirmPayment] = useState(false)
+  let [orderSuccessful, setOrderSuccessful] = useState(false)
+  // TODO: I should probably put this elsewhere...
+  let [clientSecret, setClientSecret] = useState('')
   const fetchInventoryItems = useQuery(GET_INVENTORY)
   const getOneInventoryItem = useQuery(GET_ONE_INVENTORY_ITEM, {
     variables: { id: 1 },
@@ -55,6 +61,8 @@ function App() {
         name: name,
         cost: cost ? cost : 0,
         code: code,
+        // default to 1 for now
+        quantityOrdered: 1,
       }
       setTotalCost((totalCost += cost))
     } else {
@@ -84,9 +92,10 @@ function App() {
       return
     }
 
-    const result = await stripe.confirmCardPayment('{CLIENT_SECRET}', {
+    const result = await stripe.confirmCardPayment(clientSecret, {
       payment_method: {
         card: elements.getElement(CardElement),
+        //Test
         billing_details: {
           name: 'Jenny Rosen',
         },
@@ -104,23 +113,40 @@ function App() {
         // execution. Set up a webhook or plugin to listen for the
         // payment_intent.succeeded event that handles any business critical
         // post-payment actions.
-    setCheckoutStarted(false);
+        setOrderSuccessful(true)
+
+        // create order!!!
 
       }
     }
   }
   const startCheckout = async (itemsInCart) => {
-    setCheckoutStarted(true);
+    setCheckoutStarted(true)
     // create payment intent with itemsInCart and currency
+    let cs = await createPaymentIntent({ items: itemsInCart, currency: 'usd' })
+    setClientSecret(cs)
+    if (!!cs) {
+      setReadyToConfirmPayment(true)
+    }
+  }
+
+  const resetEverything = ()=>{
+    setCheckoutStarted(false)
+    setReadyToConfirmPayment(false)
+    setOrderSuccessful(false)
+    setItemsInCart({})
+    setTotalCost(0)
+    setClientSecret('')
   }
 
   // const updateInventoryItem = useQuery(EDIT_INVENTORY_ITEM, { variables: { id: 9, quantityInStock: 5 }});
   return (
-      <div className="App">
-        <div className="container">
-          <Card>
-            <CardHeader>Bible Book Club Kits</CardHeader>
-            {!checkoutStarted? <CardBody>
+    <div className="App">
+      <div className="container">
+        <Card>
+          <CardHeader>Bible Book Club Kits</CardHeader>
+          {!checkoutStarted ? (
+            <CardBody>
               <div>
                 {fetchInventoryItems.data.getInventoryItems.map((item) => {
                   return (
@@ -140,11 +166,17 @@ function App() {
                           <CardText>{item.description}</CardText>
                           {!!item.quantityInStock ? (
                             <Button
-                              color={!itemsInCart[item.id] ? "primary" : "danger"}
+                              color={
+                                !itemsInCart[item.id] ? 'primary' : 'danger'
+                              }
                               onClick={() => onAddToCartClick(item)}
                               active={!!itemsInCart[item.id]}
                             >
-                              {!itemsInCart[item.id]? <>Add to Cart</> : <>Remove from Cart</>}
+                              {!itemsInCart[item.id] ? (
+                                <>Add to Cart</>
+                              ) : (
+                                <>Remove from Cart</>
+                              )}
                             </Button>
                           ) : (
                             <Button color="secondary" disabled={true}>
@@ -157,9 +189,13 @@ function App() {
                   )
                 })}
               </div>
-            </CardBody>: ''}
-          </Card>
-          {!checkoutStarted? <Card>
+            </CardBody>
+          ) : (
+            ''
+          )}
+        </Card>
+        {!checkoutStarted ? (
+          <Card>
             <CardHeader>Your Cart</CardHeader>
             <CardBody>
               <p>Selected: {JSON.stringify(itemsInCart)}</p>
@@ -175,11 +211,30 @@ function App() {
                   </div>
                 )
               })}
-              { Object.keys(itemsInCart).length ? <><p>Total: {!!totalCost ? '$' + totalCost : 'FREE'}</p>
-              {!checkoutStarted ? <Button color="success" onClick={() => startCheckout(itemsInCart)}>Checkout</Button>: ''} </>: ''}
+              {Object.keys(itemsInCart).length ? (
+                <>
+                  <p>Total: {!!totalCost ? '$' + totalCost : 'FREE'}</p>
+                  {!checkoutStarted ? (
+                    <Button
+                      color="success"
+                      onClick={() => startCheckout(itemsInCart)}
+                    >
+                      Checkout
+                    </Button>
+                  ) : (
+                    ''
+                  )}{' '}
+                </>
+              ) : (
+                ''
+              )}
             </CardBody>
-          </Card>: ''}
-          {checkoutStarted? <Card>
+          </Card>
+        ) : (
+          ''
+        )}
+        {checkoutStarted ? (
+          <Card>
             <CardHeader>Checkout</CardHeader>
             <CardBody>
               <p>Selected: {JSON.stringify(itemsInCart)}</p>
@@ -195,32 +250,52 @@ function App() {
                   </div>
                 )
               })}
-              { Object.keys(itemsInCart).length ? <p>Total: {!!totalCost ? '$' + totalCost : 'FREE'}</p> : ''}
-              <form onSubmit={handleSubmit}>
-                <CardElement
-                  options={{
-                    style: {
-                      base: {
-                        fontSize: '16px',
-                        color: '#424770',
-                        '::placeholder': {
-                          color: '#aab7c4',
+              {Object.keys(itemsInCart).length ? (
+                <p>Total: {!!totalCost ? '$' + totalCost : 'FREE'}</p>
+              ) : (
+                ''
+              )}
+              {readyToConfirmPayment & !orderSuccessful ? (
+                <form onSubmit={handleSubmit}>
+                  <CardElement
+                    options={{
+                      style: {
+                        base: {
+                          fontSize: '16px',
+                          color: '#424770',
+                          '::placeholder': {
+                            color: '#aab7c4',
+                          },
+                        },
+                        invalid: {
+                          color: '#9e2146',
                         },
                       },
-                      invalid: {
-                        color: '#9e2146',
-                      },
-                    },
-                  }}
-                />
-                <Button color="success" disabled={!stripe}>
-                  Confirm order
-                </Button>
-              </form>
+                    }}
+                  />
+                  <Button color="success" disabled={!stripe}>
+                    Confirm order
+                  </Button>
+                </form>
+              ) : (
+                ''
+              )}
+              {orderSuccessful ? (
+                <div>
+                  {' '}
+                  <Alert color="success">Your order has been received!</Alert>
+                  <Button color="success" onClick={resetEverything}>Continue Shopping</Button>
+                </div>
+              ) : (
+                ''
+              )}
             </CardBody>
-          </Card>: ''}
-        </div>
+          </Card>
+        ) : (
+          ''
+        )}
       </div>
+    </div>
   )
 }
 

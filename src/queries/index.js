@@ -32,11 +32,11 @@ export const EDIT_INVENTORY_ITEM = gql`
 `;
 
 // TODO: Create Order with Stripe details
-// export const CREATE_ORDER = gql`
-//   mutation($name: String, $email: String) {
-//     createOrder (name: $name, email: $email)
-//   }
-// `;
+export const CREATE_ORDER = gql`
+  mutation($name: String, $email: String) {
+    createOrder (name: $name, email: $email)
+  }
+`;
 
 // Not needed, but wanted to see the delete mutation example.
 // export const DELETE_INVENTORY_ITEM = gql`
