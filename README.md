@@ -7,7 +7,7 @@ Backend: [book-kit](https://github.com/micharine/book-kit)
 1. Set up and start the API, [instructions here](https://github.com/micharine/book-kit/tree/stripe).
 1. Run `npm install` from root of project
 1. Run `npm start`
-1. You may need to disable ad blockers for localhost for the Stripe elements to work properly.
+1. You may need to disable ad blockers for localhost to get the Stripe elements to work properly.
 
 ## TO DO
 - [ ] Break `App.js` into components
