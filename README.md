@@ -1,7 +1,13 @@
 # Front-end code for Bible Book Club Store
 
 React front-end for an Express-powered GraphQL simple store app. It allows you to add items to your cart and checkout ([Stripe card element](https://stripe.com/docs/stripe-js/react#element-components)). Upon checkout, an order will be created in a MySQL database.
-Backend: [book-kit](https://github.com/micharine/book-kit) 
+Backend: [book-kit](https://github.com/micharine/book-kit)
+
+## To run locally after cloning
+1. Set up and start the API, [instructions here](https://github.com/micharine/book-kit/tree/stripe).
+1. Run `npm install` from root of project
+1. Run `npm start`
+1. You may need to disable ad blockers for localhost for the Stripe elements to work properly.
 
 ## TO DO
 - [ ] Break `App.js` into components
@@ -13,7 +19,7 @@ Backend: [book-kit](https://github.com/micharine/book-kit)
 - [ ] ...
 
 ## Notes
-- Info for testing stripe element: https://stripe.com/docs/testing
+- Info for testing stripe element: [test card numbers](https://stripe.com/docs/testing)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
