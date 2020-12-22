@@ -1,6 +1,6 @@
 # Proof of Concept (WIP): Front-end code for Bible Book Club Store
 
-This is a proof of concept app for learning how to integrate React with GraphQL+Express. 
+This is a proof of concept app for learning how to integrate React with GraphQL+Express+MySQL. 
 
 React front-end for an Express-powered GraphQL simple store app. It allows you to add items to your cart and checkout ([Stripe card element](https://stripe.com/docs/stripe-js/react#element-components)). Upon checkout, an order will be created in a MySQL database.
 Backend: [book-kit](https://github.com/micharine/book-kit) 
